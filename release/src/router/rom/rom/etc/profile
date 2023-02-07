@@ -1,5 +1,5 @@
 export PATH="/bin:/usr/bin:/sbin:/usr/sbin:/home/$USER:/mmc/sbin:/mmc/bin:/mmc/usr/sbin:/mmc/usr/bin:/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin"
-export PS1='\u@\h:\w\$ '
+export PS1='\e[1;31m\u:\e[0m \e[1;32m\w# \e[0m'
 
 alias l='ls -lFA'
 alias ll='ls -lF'

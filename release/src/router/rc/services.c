@@ -7610,6 +7610,10 @@ start_services(void)
 	start_dblog(0);
 #endif /* RTCONFIG_DBLOG */
 #endif /* RTCONFIG_FRS_FEEDBACK */
+
+// UVAXUT from Merlin asuswrt
+	run_custom_script("services-start", 0, NULL, NULL);
+
 	return 0;
 }
 
@@ -7625,6 +7629,9 @@ stop_logger(void)
 void
 stop_services(void)
 {
+// UVAXUT from Merlin asuswrt
+	run_custom_script("services-stop", 0, NULL, NULL);
+
 #ifdef RTCONFIG_ADTBW
 	stop_adtbw();
 #endif
@@ -8022,6 +8029,7 @@ stop_services_mfg(void)
 	killall_tk("ministun");
 #endif
 }
+
 
 // 2008.10 magic
 

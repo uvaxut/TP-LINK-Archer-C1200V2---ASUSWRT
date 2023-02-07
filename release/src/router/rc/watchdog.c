@@ -351,6 +351,20 @@ void led_control_normal(void)
 	if (nvram_get_int("led_pwr_gpio") != nvram_get_int("led_wps_gpio"))
 		led_control(LED_WPS, LED_OFF);
 #endif
+
+#if defined(RTAC1200GP) || defined(RTAC1200G)
+	led_control(LED_WAN, LED_OFF);
+	led_control(LED_WAN_RED, LED_OFF);
+	led_control(LED_LAN, LED_OFF);
+	led_control(LED_2G, LED_OFF);
+	led_control(LED_5G, LED_OFF);
+
+	led_control(LED_LAN1, LED_OFF);
+	led_control(LED_LAN2, LED_OFF);
+	led_control(LED_LAN3, LED_OFF);
+	led_control(LED_LAN4, LED_OFF);
+#endif
+
 }
 
 #ifndef HND_ROUTER
@@ -2232,7 +2246,6 @@ static inline void set_usbled_for_ejusb_btn(struct ejusb_btn_s *p, int mode)
 	}
 }
 
-
 /**
  * Handle eject USB button.
  */
@@ -2395,6 +2408,26 @@ static inline void handle_eject_usb_button(void) { }
 
 void btn_check(void)
 {
+
+// UVAXUT for TP-LINK Archer C1200
+#if defined(RTAC1200GP)
+	if(nvram_get_int("leds_mode") == 1){
+		if (nvram_match("wl0_radio", "1")) {
+			led_control(LED_2G, LED_ON);
+		}
+		else {
+			led_control(LED_2G, LED_OFF);
+		}
+		if (nvram_match("wl1_radio", "1")) {
+			led_control(LED_5G, LED_ON);
+		}
+		else {
+			led_control(LED_5G, LED_OFF);
+		}
+		LanWanLedCtrl_tplink();
+	}
+#endif
+
 #ifdef RTCONFIG_WIFI_SON
 	pid_t pid;
 	char *argv[]={"/sbin/delay_exec","4","rc rc_service restart_allnet",NULL};
@@ -2837,13 +2870,16 @@ void btn_check(void)
 
 				kill_pidfile_s("/var/run/usbled.pid", SIGTSTP); // inform usbled to reset status
 #endif
+
 #if defined(RTAC1200G) || defined(RTAC1200GP)
-				eval("et", "robowr", "0", "0x18", "0x01ff");	// lan/wan ethernet/giga led
-				eval("et", "robowr", "0", "0x1a", "0x01ff");
-				eval("wl", "-i", "eth1", "ledbh", "3", "7");
-				eval("wl", "-i", "eth2", "ledbh", "11", "7");
+//				ledtest_main();
+//				eval("et", "robowr", "0", "0x18", "0x01ff");	// lan/wan ethernet/giga led
+//				eval("et", "robowr", "0", "0x1a", "0x01ff");
+//				eval("wl", "-i", "eth1", "ledbh", "5", "7");
+//				eval("wl", "-i", "eth2", "ledbh", "11", "7");
 				kill_pidfile_s("/var/run/usbled.pid", SIGTSTP); // inform usbled to reset status
 #endif
+
 #ifdef RTCONFIG_QCA
 				char word[16], *next;
 				int unit = 0;

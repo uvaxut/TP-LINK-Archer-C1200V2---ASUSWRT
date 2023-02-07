@@ -31,6 +31,40 @@ static int wdbg = 0;
 
 #define _wdbg(fmt, args...) do { if (wdbg) { dbg(fmt, ## args); }; } while (0)
 
+//UVAXUT for TP-LINK Archer C1200
+#if defined(RTAC1200GP) || defined(RTAC1200G)
+static int update_wan_led_and_wanred_led_tp_link(int wan_unit)
+{
+/*	
+	int mode = sw_mode, l = link_wan[wan_unit], state;
+	char s[] = "wanX_state_tXXX";
+	snprintf(s, sizeof(s), "wan%d_state_t", wan_unit);
+	state = nvram_get_int(s);
+	switch (mode) {
+	case SW_MODE_ROUTER:
+		if (state == WAN_STATE_CONNECTED) {
+			led_control(LED_WAN, LED_ON);
+			led_control(LED_WAN_RED, LED_OFF);
+		} else {
+			led_control(LED_WAN, LED_OFF);
+			led_control(LED_WAN_RED, LED_ON);
+		}
+		break;
+	case SW_MODE_REPEATER:
+		led_control(LED_WAN, LED_OFF);
+		led_control(LED_WAN_RED, LED_OFF);
+		break;
+	case SW_MODE_AP:
+		led_control(LED_WAN, LED_OFF);
+		led_control(LED_WAN_RED, LED_OFF);
+		break;
+	}
+*/
+	return 0;
+}
+
+#endif
+
 #if defined(RTCONFIG_WANRED_LED)
 static int update_wan_led_and_wanred_led(int wan_unit)
 {
@@ -211,6 +245,9 @@ void set_link_internet(int wan_unit, int link_internet){
 	nvram_set_int("link_internet", link_internet);
 #if defined(RTCONFIG_LANWAN_LED)
 	update_wan_leds(wan_unit);
+#endif
+#if defined(RTAC1200GP)
+	update_wan_led_and_wanred_led_tp_link(wan_unit);
 #endif
 }
 

@@ -1296,6 +1296,12 @@ static inline int update_wan_leds(int wan_unit) { update_failover_led(); return 
 extern int wanduck_main(int argc, char *argv[]);
 extern int conn_diag_main(int argc, char *argv[]);
 
+// UVAXUT for TP-LINK Archer C1200
+// led_tplink.c
+extern void tplink_leds(int st);
+extern int tplink_night_mode();
+extern int tplink_normal_mode();
+
 // tcpcheck.c
 extern int setupsocket(int sock);
 extern void wakeme(int sig);

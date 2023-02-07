@@ -86,6 +86,7 @@ static int setAllSpecificColorLedOn(enum ate_led_color color)
 #endif
 #if defined(RT4GAC53U)
 	case MODEL_RT4GAC53U:
+	case MODEL_RTAC1200GP:
 		{
 			static enum led_id blue_led[] = {
 				LED_POWER, LED_2G, LED_5G, LED_LAN, LED_USB,
@@ -101,7 +102,9 @@ static int setAllSpecificColorLedOn(enum ate_led_color color)
 		}
 		break;
 #endif
-#if defined(RTAC82U)
+//UVAXUT modification for TP-LINK Archer C1200
+//#if defined(RTAC82U)
+#if defined(RTAC82U) || defined(RTAC1200G) || defined(RTAC1200GP)
 	case MODEL_RTAC82U:
 		{
 			static enum led_id blue_led[] = {

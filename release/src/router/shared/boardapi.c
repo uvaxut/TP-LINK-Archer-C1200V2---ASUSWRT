@@ -88,7 +88,9 @@ static const struct led_btn_table_s {
 	{ "led_5g_gpio",	&led_gpio_table[LED_5G] },
 	{ "led_5g2_gpio",	&led_gpio_table[LED_5G2] },
 	{ "led_60g_gpio",	&led_gpio_table[LED_60G] },
-#ifdef RTCONFIG_LAN4WAN_LED
+//UVAXUT modification for TP-LINK Archer C1200
+//#ifdef RTCONFIG_LAN4WAN_LED
+#ifndef RTCONFIG_LAN4WAN_LED
 	{ "led_lan1_gpio",	&led_gpio_table[LED_LAN1] },
 	{ "led_lan2_gpio",	&led_gpio_table[LED_LAN2] },
 	{ "led_lan3_gpio",	&led_gpio_table[LED_LAN3] },

@@ -299,6 +299,7 @@ endif
 
 OBJS += wanduck.o
 OBJS += tcpcheck.o
+OBJS += led_tplink.o
 
 ifeq ($(RTCONFIG_SOC_IPQ8064),y)
 CFLAGS += -DBUILD_READMEM
@@ -670,6 +671,10 @@ endif
 	@cd $(INSTALLDIR)/sbin && ln -sf rc reboot
 	@cd $(INSTALLDIR)/sbin && ln -sf rc halt
 	@cd $(INSTALLDIR)/sbin && ln -sf rc netool
+# UVAXUT for TP-LINK Archer C1200
+	@cd $(INSTALLDIR)/sbin && ln -sf rc leds-on
+	@cd $(INSTALLDIR)/sbin && ln -sf rc leds-off
+
 ifeq ($(HND_ROUTER),y)
 	@cd $(INSTALLDIR)/sbin && ln -sf rc hnd-write
 	@cd $(INSTALLDIR)/sbin && ln -sf rc hnd-erase

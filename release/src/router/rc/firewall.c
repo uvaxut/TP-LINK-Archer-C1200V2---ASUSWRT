@@ -1797,19 +1797,36 @@ void nat_setting(char *wan_if, char *wan_ip, char *wanx_if, char *wanx_ip, char 
 			break;
 		}
 #endif
-		if (inet_addr_(wan_ip))
-			fprintf(fp, "-A POSTROUTING %s -o %s ! -s %s -j MASQUERADE\n", p, wan_if, wan_ip);
-
+		if (inet_addr_(wan_ip)){
+			if(nvram_get_int("ne_nat") == 0){ /* UVAXUT adding SNAT */
+				fprintf(fp, "-A POSTROUTING %s -o %s ! -s %s -j MASQUERADE\n", p, wan_if, wan_ip);
+			} else {
+				fprintf(fp, "-A POSTROUTING %s -o %s ! -s %s -j SNAT --to-source %s\n", p, wan_if, wan_ip, wan_ip);
+			}
+		}
+		
 		/* masquerade physical WAN port connection */
-		if (strcmp(wan_if, wanx_if) && inet_addr_(wanx_ip))
-			fprintf(fp, "-A POSTROUTING %s -o %s ! -s %s -j MASQUERADE\n", p, wanx_if, wanx_ip);
-
+		if (strcmp(wan_if, wanx_if) && inet_addr_(wanx_ip)){
+			if(nvram_get_int("ne_nat") == 0){ /* UVAXUT adding SNAT */
+				fprintf(fp, "-A POSTROUTING %s -o %s ! -s %s -j MASQUERADE\n", p, wanx_if, wanx_ip);
+			} else {
+				fprintf(fp, "-A POSTROUTING %s -o %s ! -s %s -j SNAT --to-source %s\n", p, wanx_if, wanx_ip, wanx_ip);
+			}
+		}
 		/* masquerade lan to lan */
-		fprintf(fp, "-A POSTROUTING %s -o %s -s %s -d %s -j MASQUERADE\n", p, lan_if, lan_class, lan_class);
+		if(nvram_get_int("ne_nat") == 0){ /* UVAXUT adding SNAT */
+			fprintf(fp, "-A POSTROUTING %s -o %s -s %s -d %s -j MASQUERADE\n", p, lan_if, lan_class, lan_class);
+		} else {
+			fprintf(fp, "-A POSTROUTING %s -o %s -s %s -d %s -j SNAT --to-source %s\n", p, lan_if, lan_class, lan_class, lan_ip);
+		}
 
 #ifdef RTCONFIG_WIFI_SON
 		ip2class(g_lan_ip, nvram_safe_get("lan_netmask"), g_lan_class);
-		fprintf(fp, "-A POSTROUTING %s -o %s -s %s -d %s -j MASQUERADE\n", p, BR_GUEST, g_lan_class, g_lan_class);
+		if(nvram_get_int("ne_nat") == 0){ /* UVAXUT adding SNAT */
+			fprintf(fp, "-A POSTROUTING %s -o %s -s %s -d %s -j MASQUERADE\n", p, BR_GUEST, g_lan_class, g_lan_class);
+		} else {
+			fprintf(fp, "-A POSTROUTING %s -o %s -s %s -d %s -j SNAT --to-source %s\n", p, BR_GUEST, g_lan_class, g_lan_class, g_lan_ip);
+		}
 #endif
 	}
 
@@ -5965,9 +5982,14 @@ int start_firewall(int wanunit, int lanunit)
 #endif
 
 	if (restart_upnp) start_upnp();
-
+	
+// Starting user`s firewall script --UVAXUT from tomato --
+//	run_nvscript("script_fire", NULL, 1);
 leave:
 	file_unlock(lock);
+
+// UVAXUT from Merlin asuswrt
+	run_custom_script("firewall-start", 0, wan_if, NULL);
 
 	return 0;
 }

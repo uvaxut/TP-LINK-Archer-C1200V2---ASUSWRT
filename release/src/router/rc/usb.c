@@ -1679,6 +1679,9 @@ _dprintf("%s: stop_cloudsync.\n", __func__);
 		stop_usb_swap(mnt->mnt_dir);
 #endif	
 
+// UVAXUT from Merlin asuswrt
+	run_custom_script("unmount", 120, mnt->mnt_dir, NULL);
+
 	for (count = 0; count < 35; count++) {
 		sync();
 		ret = umount(mnt->mnt_dir);
@@ -1858,6 +1861,10 @@ int mount_partition(char *dev_name, int host_num, char *dsc_name, char *pt_name,
 		return 0;
 
 	find_label_or_uuid(dev_name, the_label, uuid);
+
+// UVAXUT from Merlin asuswrt
+	run_custom_script("pre-mount", 120, dev_name, type);
+
 
 	if (f_exists("/etc/fstab")) {
 		if (strcmp(type, "swap") == 0) {
@@ -2041,6 +2048,9 @@ _dprintf("usb_path: 4. don't set %s.\n", tmp);
 
 		if (nvram_get_int("usb_automount"))
 			run_nvscript("script_usbmount", mountpoint, 3);
+
+// UVAXUT from Merlin asuswrt
+		run_custom_script("post-mount", 120, mountpoint, NULL);
 
 #if defined(RTCONFIG_APP_PREINSTALLED) && defined(RTCONFIG_CLOUDSYNC)
 		char word[PATH_MAX], *next_word;

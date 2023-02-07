@@ -2119,7 +2119,7 @@ static void shutdn(int rb)
 	sync();
 
 	// TODO LED Status for LED
-	setAllLedOff();
+	tplink_leds(LED_OFF);
 
 	sync(); sync(); sync();
 #ifdef HND_ROUTER
@@ -7069,6 +7069,7 @@ int init_nvram(void)
 		break;
 #endif
 
+// Modify for TP-LINK Archer C1200v2
 #if defined(RTAC1200G) || defined(RTAC1200GP)
 	case MODEL_RTAC1200G:
 	case MODEL_RTAC1200GP:
@@ -7083,13 +7084,29 @@ int init_nvram(void)
 		nvram_set("wl_ifnames", "eth1 eth2");
 		nvram_set("wl0_vifnames", "wl0.1 wl0.2 wl0.3");
 		nvram_set("wl1_vifnames", "wl1.1 wl1.2 wl1.3");
-		nvram_set_int("btn_rst_gpio", 5|GPIO_ACTIVE_LOW);
-		nvram_set_int("btn_wps_gpio", 9|GPIO_ACTIVE_LOW);
-		nvram_set_int("led_pwr_gpio", 10|GPIO_ACTIVE_LOW);
-		nvram_set_int("led_wps_gpio", 10|GPIO_ACTIVE_LOW);
-//		nvram_set_int("led_5g_gpio", 11);	// active high
-		nvram_set_int("led_usb_gpio", 15|GPIO_ACTIVE_LOW);
 
+		nvram_set_int("btn_rst_gpio", 7|GPIO_ACTIVE_LOW);
+		nvram_set_int("btn_wps_gpio", 9|GPIO_ACTIVE_LOW);
+
+		nvram_set_int("led_pwr_gpio", 1);
+		nvram_set_int("led_wan_gpio", 3);
+		nvram_set_int("led_wan_red_gpio", 4);
+
+		nvram_set_int("led_wps_gpio", 10);
+		nvram_set_int("led_2g_gpio", 5);
+		nvram_set_int("led_5g_gpio", 11);
+		nvram_set_int("led_usb_gpio", 12);
+
+		nvram_set_int("led_lan1_gpio", 15);
+		nvram_set_int("led_lan2_gpio", 13);
+		nvram_set_int("led_lan3_gpio", 6);
+		nvram_set_int("led_lan4_gpio", 8);
+//		nvram_set_int("led_all_gpio", 255);
+//		nvram_set_int("led_logo_gpio", 255);
+		
+		nvram_set("model", "Archer-C1200");
+		nvram_set_int("leds_mode", LED_ON);
+		
 		nvram_unset("xhci_ports");
 		nvram_set("ehci_ports", "1-1");
 		nvram_set("ohci_ports", "2-1");
@@ -9823,9 +9840,9 @@ void Ate_on_off_led_fail_loop(void)
 		set_rgbled(RGBLED_RED);
 		pause();
 #elif defined(RTCONFIG_CONCURRENTREPEATER) && (defined(RTCONFIG_QCA) || defined(RTCONFIG_REALTEK))
-		setAllLedOff();
+		tplink_leds(LED_OFF);
 		sleep(1);
-		setAllLedOn();
+		tplink_leds(LED_ON);
 		sleep(1);
 #else
 		led_control(LED_POWER, LED_OFF);
@@ -9865,7 +9882,7 @@ void Ate_on_off_led_success(void)
 #ifdef RTCONFIG_BCMARM
 #ifdef RT4GAC68U
 		asus_ate_StartATEMode();
-		setAllLedOn();
+		tplink_leds(LED_ON);
 #else
 		setATEModeLedOn();
 #endif
@@ -9881,7 +9898,7 @@ void Ate_on_off_led_success(void)
 			led_control(LED_USB, LED_ON);
 		}
 		else
-			setAllLedOn();
+			tplink_leds(LED_ON);
 #endif	/* RTCONFIG_LP5523 */
 #endif
 	}
@@ -9917,6 +9934,11 @@ static void sysinit(void)
         system("bcm_boot_launcher start");
         start_hw_wdt();
 #endif
+
+// UVAXUT for TP-LINK Archer C1200
+	tplink_leds(LED_ON);
+	sleep(1);
+	tplink_leds(LED_OFF);
 
 #define MKNOD(name,mode,dev)		if (mknod(name,mode,dev))		perror("## mknod " name)
 #define MOUNT(src,dest,type,flag,data)	if (mount(src,dest,type,flag,data))	perror("## mount " src)
@@ -10517,9 +10539,9 @@ Alarm_Led(void) {
 	while(1) {
 #if defined(RTCONFIG_CONCURRENTREPEATER)
 #if defined(RTCONFIG_QCA) || defined(RTCONFIG_REALTEK)
-		setAllLedOff();
+		tplink_leds(LED_OFF);
 		sleep(1);
-		setAllLedOn();
+		tplink_leds(LED_ON);
 		sleep(1);
 #endif
 #else
@@ -10813,8 +10835,7 @@ dbg("boot/continue fail= %d/%d\n", nvram_get_int("Ate_boot_fail"),nvram_get_int(
 #ifdef RTCONFIG_DSL
 			start_dsl();
 #endif
-			start_lan();
-
+			start_lan();		
 
 #ifdef RTCONFIG_QTN
 			start_qtn();
@@ -10824,6 +10845,7 @@ dbg("boot/continue fail= %d/%d\n", nvram_get_int("Ate_boot_fail"),nvram_get_int(
 			misc_ioctrl();
 #endif
 			start_services();
+			
 #ifdef CONFIG_BCMWL5
 			if (restore_defaults_g)
 			{
@@ -11197,7 +11219,7 @@ dbg("boot/continue fail= %d/%d\n", nvram_get_int("Ate_boot_fail"),nvram_get_int(
 				}
 			}
 			else if (nvram_match("Ate_power_on_off_enable", "2"))
-				setAllLedOn();
+				tplink_leds(LED_ON);
 #endif
 
 #if defined(RTCONFIG_CONCURRENTREPEATER)
@@ -11251,7 +11273,6 @@ dbg("boot/continue fail= %d/%d\n", nvram_get_int("Ate_boot_fail"),nvram_get_int(
 		f_write_string("/proc/sys/vm/drop_caches", "3", 0, 0);
 #endif
 	}
-
 	return 0;
 }
 

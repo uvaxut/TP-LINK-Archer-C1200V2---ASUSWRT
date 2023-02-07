@@ -622,18 +622,43 @@ void update_wan_state(char *prefix, int state, int reason)
 		snprintf(tmp, sizeof(tmp), "/var/run/ppp-wan%d.status", unit);
 		unlink(tmp);
 	}
+// UVAXUT from Merlin asuswrt code
+	sprintf(tmp,"%d", unit);
 
-#if defined(RTCONFIG_WANRED_LED)
 	switch (state) {
 	case WAN_STATE_INITIALIZING:
-	case WAN_STATE_STOPPED:
+		strcpy(tmp1, "init");
+		break;
 	case WAN_STATE_CONNECTING:
-	case WAN_STATE_STOPPING:
+		strcpy(tmp1, "connecting");
+		break;
 	case WAN_STATE_CONNECTED:
-		/* update WAN LED(s) as soon as possible. */
-		update_wan_leds(unit);
+		strcpy(tmp1, "connected");
+		break;
+	case WAN_STATE_DISCONNECTED:
+		strcpy(tmp1, "disconnected");
+		break;
+	case WAN_STATE_STOPPED:
+		strcpy(tmp1, "stopped");
+		break;
+	case WAN_STATE_DISABLED:
+		strcpy(tmp1, "disabled");
+		break;
+	case WAN_STATE_STOPPING:
+		strcpy(tmp1, "stopping");
+		break;
+	default:
+		sprintf(tmp1, "state %d", state);
 	}
-#endif
+
+	run_custom_script("wan-event", 0, tmp, tmp1);
+
+	/* For backward/legacy compatibility */
+	if (state == WAN_STATE_CONNECTED) {
+		sprintf(tmp,"%c",prefix[3]);
+		run_custom_script("wan-start", 0, tmp, NULL);
+	}
+// -----------
 }
 
 #ifdef RTCONFIG_IPV6
@@ -2778,6 +2803,9 @@ wan_up(const char *pwan_ifname)
 		pclose(fp);
 	}
 #endif
+
+	// Starting user`s WAN Init script -- UVAXUT modification --
+//	run_nvscript("script_wan", NULL, 0);
 
 _dprintf("%s(%s): done.\n", __FUNCTION__, wan_ifname);
 }

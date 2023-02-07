@@ -351,6 +351,8 @@ void start_jffs2(void)
 	}
 	run_userfile("/jffs", ".asusrouter", "/jffs", 3);
 #endif
+// UVAXUT from Merlin asuswrt code
+	if (!check_if_dir_exist("/jffs/scripts/")) mkdir("/jffs/scripts/", 0755);
 }
 
 void stop_jffs2(int stop)

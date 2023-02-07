@@ -825,6 +825,10 @@ static const applets_t applets[] = {
 	{ "delay_exec",			delay_main			},
 
 	{ "wanduck",			wanduck_main			},
+
+	{ "leds-on",			tplink_normal_mode			},
+	{ "leds-off",			tplink_night_mode			},
+
 	{ "conn_diag",			conn_diag_main			},
 #if defined(CONFIG_BCMWL5) && !defined(HND_ROUTER) && defined(RTCONFIG_DUALWAN)
 	{ "dualwan",			dualwan_control			},
@@ -1762,6 +1766,8 @@ int main(int argc, char **argv)
 		if (argv[1] && ((!strcmp(argv[1], "boot")) ||
 				(!strcmp(argv[1], "linux")) ||
 				(!strcmp(argv[1], "rootfs")) ||
+// UVAXUT added formatting jffs2
+				(!strcmp(argv[1], "jffs2")) ||
 				(!strcmp(argv[1], "nvram")))) {
 			return mtd_erase(argv[1]);
 		} else {
@@ -1967,6 +1973,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 #endif
+
 	printf("Unknown applet: %s\n", base);
 	return 0;
 }

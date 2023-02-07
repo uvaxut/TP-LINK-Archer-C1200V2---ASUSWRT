@@ -901,12 +901,13 @@ enum led_id {
 	LED_5G2,
 	LED_60G,
 	LED_USB3,
-#ifdef RTCONFIG_LAN4WAN_LED
+// UVAXUT modify for TP-LINK Archer C1200
+//#ifdef RTCONFIG_LAN4WAN_LED
 	LED_LAN1,
 	LED_LAN2,
 	LED_LAN3,
 	LED_LAN4,
-#endif
+//#endif
 #ifdef RTCONFIG_LOGO_LED
 	LED_LOGO,
 #endif
